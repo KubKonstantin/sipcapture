@@ -1,0 +1,136 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: {{ dig "global" "monitoring" "namespace" .Release.Namespace (.Values | merge (dict)) | quote }}
+  name: webapp-conf
+  labels:
+{{ include "common.labels" . | indent 4 }}
+data:
+  bootstrapped: |
+    bootstrapping
+  webapp_config.json: |
+    {
+      "auth_settings": {
+        "_comment": "The type param can be internal, ldap, http_auth",
+        "token_expire": 1200,
+        "type": "internal"
+      },
+      "database_config": {
+        "help": "Settings for PGSQL Database (settings)",
+        "host": {{ .Values.homer.dbhost }},
+        "keepalive": true,
+        "name": {{ .Values.heplifyServer.dbconftable }},
+        "node": "LocalConfig",
+        "pass": "{{ .Values.heplifyServer.dbpass }}",
+        "user": "{{ .Values.heplifyServer.dbuser }}"
+      },
+      "database_data": {
+        "localnode": {
+          "help": "Settings for PGSQL Database (data)",
+          "host": {{ .Values.homer.dbhost }},
+          "keepalive": true,
+          "name": {{ .Values.heplifyServer.dbdatatable }},
+          "node": "LocalNode",
+          "pass": "{{ .Values.heplifyServer.dbpass }}",
+          "user": "{{ .Values.heplifyServer.dbuser }}"
+        }
+      },
+      "decoder_shark": {
+        "_comment": "Here you can do packet decoding to using tshark application. Please define uid, gid if you run the app under root",
+        "active": false,
+        "bin": "/usr/bin/tshark",
+        "protocols": [
+          "1_call",
+          "1_registration",
+          "1_default"
+        ]
+      },
+      "grafana_config": {
+        "help": "Settings for Grafana",
+        "host": {{ .Values.homer.grafanahost }},
+        "path": {{ .Values.homer.grafanapath }},
+        "token":{{ .Values.homer.grafanatoken }}
+      },
+      "hep_relay": {
+        "help": "UDP socket to send HEP data on",
+        "host": "heplify-server",
+        "port": 9060
+      },
+      "http_auth": {
+        "skipverify": true,
+        "url": "http://localhost:1323"
+      },
+      "http_settings": {
+        "debug": false,
+        "gzip": true,
+        "gzip_static": true,
+        "help": "Settings for the HOMER Webapp Server. If you have gzip_static = false, please be sure that your dist directory has uncompressed .js files",
+        "host": "0.0.0.0",
+        "port": 80 ,
+        "root": "/usr/local/homer/dist"
+      },
+      "https_settings": {
+        "cert": "/usr/local/homer/tls/cert.pem",
+        "enable": false,
+        "help": "SSL settings for homer-app",
+        "host": "0.0.0.0",
+        "key": "/usr/local/homer/tls/key.pem",
+        "port": 443
+      },
+      "ldap_config": {
+        "admingroup": "admin",
+        "adminmode": true,
+        "anonymous": false,
+        "attributes": [
+          "dn",
+          "givenName",
+          "sn",
+          "mail",
+          "uid"
+        ],
+        "base": "dc=example,dc=com",
+        "binddn": "uid=readonlysuer,ou=People,dc=example,dc=com",
+        "bindpassword": "readonlypassword",
+        "groupattribute": "cn",
+        "groupfilter": "(memberUid=%s)",
+        "host": "ldap.example.com",
+        "port": 389,
+        "skiptls": true,
+        "skipverify": true,
+        "userdn": "uid=%s,ou=People,dc=example,dc=com",
+        "userfilter": "(uid=%s)",
+        "usergroup": "HOMER_user",
+        "usermode": true,
+        "usessl": false
+      },
+      "loki_config": {
+        "api": "loki/api/v1",
+        "help": "Settings for LOKI Database (optional)",
+        "host": {{ .Values.heplifyServer.lokiurl }},
+        "param_query": {{ .Values.homer.lokiquery }},
+        "pass": {{ .Values.homer.pass }},
+        "user": {{ .Values.homer.user }}
+      },
+      "prometheus_config": {
+        "api": "api/v1",
+        "help": "Settings for Prometheus Database (optional)",
+        "host": {{ .Values.heplifyServer.promaddr }},
+        "pass": {{ .Values.homer.prompass }},
+        "user": {{ .Values.homer.promuser }}
+      },
+      "system_settings": {
+        "_loglevels": "can be: fatal, error, warn, info, debug, trace",
+        "help": "Settings for HOMER logs",
+        "hostname": "ip-172-31-23-156",
+        "loglevel": "debug",
+        "logname": "homer-app.log",
+        "logpath": "/usr/local/homer/log",
+        "logstdout": true,
+        "uuid": "4bd92b25-0dd8-4326-a984-08da79dcc569"
+      },
+      "transaction_settings": {
+        "deduplicate": {
+          "global": false
+        }
+      }
+    }

@@ -1,0 +1,44 @@
+heplifyServer: 
+  image: sipcapture/heplify-server:latest
+  hepaddr: "0.0.0.0:9060"
+  heptcpaddr: "0.0.0.0:9061"
+  dbshema: "homer7"
+  dbdriver: "postgres"
+  dbaddr: "postgres:5432"
+  dbuser: root
+  dbpass: homerSeven
+  dbdatatable: "homer_data"
+  dbconftable: "homer_config"
+  dbrotate: true
+  dbdropdays: 15
+  dbdroponstart: true
+  esaddr: "esaddr"
+  esdiscovery: false
+  espass: "Srmplepassdocdocelas434t"
+  esuser: "admin"
+  loglvl: "info"
+  logstd: true
+  promaddr: "0.0.0.0:9096"
+  promtargetip: "someip"
+  promtargetname: "somename" 
+  dedup: false
+  lokiurl: "http://loki:3100/api/prom/push"
+  lokitimer: 2
+  
+homer: 
+  image: sipcapture/webapp:latest
+  hostname: homer.192.168.1.17.xip.io
+  dbhost: "postgres"
+  grafanahost: "http://grafana:3000"
+  grafanapath: "/grafana"
+  grafanatoken: "sometoken"
+  lokiquery: "query_range"
+  lokipass: "admin"
+  lokiuser: "admin"
+  prompass: "admin"
+  promuser: "admin"
+  
+postgres: 
+  image: postgres:11-alpine
+  storage: 30Gi 
+
